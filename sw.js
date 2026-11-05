@@ -1,5 +1,5 @@
 /* Offline support: cache everything on install, serve from cache, refresh in the background. */
-const CACHE = 'puppx-rampage-v1';
+const CACHE = 'puppx-rampage-v2';
 const ASSETS = [
   './',
   'index.html',

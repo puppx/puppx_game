@@ -89,11 +89,11 @@ const Sfx = (() => {
       ],
     },
   };
-  let song = 'menu', step = 0, nextT = 0;
+  let song = 'menu', step = 0, nextT = 0, key = 0, bpmAdd = 0;
   function sched() {
     if (!ac || ac.state !== 'running') return;
     const sp = SONGS[song];
-    const dur = 60 / sp.bpm / 4;
+    const dur = 60 / (sp.bpm + (song === 'menu' ? 0 : bpmAdd)) / 4;
     if (nextT < ac.currentTime - 0.2) nextT = ac.currentTime + 0.05;
     while (nextT < ac.currentTime + 0.12) {
       if (musOn) playStep(sp, step, nextT, dur);
@@ -102,11 +102,11 @@ const Sfx = (() => {
     }
   }
   function playStep(sp, s, t, dur) {
-    const bar = Math.floor(s / 16) % 4, i = s % 16, chord = sp.prog[bar];
+    const bar = Math.floor(s / 16) % 4, i = s % 16, tr = song === 'menu' ? 0 : key, chord = sp.prog[bar].map(n => n + tr);
     const second = s >= 64;
     if (i % 2 === 0) tone(mtof(chord[0] - 24 + (i % 8 === 6 ? 12 : 0)), dur * 1.6, 'triangle', 0.32, null, 0, musG, t);
     if (sp.drums || i % 2 === 0) tone(mtof(chord[i % 3] + 12 + (i >= 8 ? 12 : 0)), dur * 0.7, 'square', 0.035, null, 0, musG, t);
-    const ln = sp.lead[bar][i];
+    const ln = sp.lead[bar][i] ? sp.lead[bar][i] + tr : 0;
     if (ln && (second || !sp.drums)) tone(mtof(ln), dur * 1.8, 'square', 0.055, null, 0, musG, t);
     if (sp.drums) {
       if (i % 8 === 0) tone(150, 0.12, 'sine', 0.55, 40, 0, musG, t);
@@ -121,6 +121,7 @@ const Sfx = (() => {
     setSfx(on) { sfxOn = on; if (sfxG) sfxG.gain.value = on ? 1 : 0; },
     setMusic(on) { musOn = on; if (musG) musG.gain.value = on ? 0.45 : 0; },
     song(name) { if (song !== name) { song = name; step = 0; } },
+    setKey(k, b) { key = k; bpmAdd = b; },
     suspend() { if (ac && ac.state === 'running') ac.suspend(); },
     resume() { if (ac && ac.state === 'suspended') ac.resume(); },
     shoot() { if (ok('shoot', 75)) tone(820 + Math.random() * 160, 0.05, 'square', 0.035, 420); },
@@ -144,6 +145,19 @@ const Sfx = (() => {
     wave() { tone(392, 0.1, 'square', 0.07); tone(523, 0.18, 'square', 0.07, null, 0.1); },
     die() { [392, 330, 262, 196].forEach((f, i) => tone(f, 0.22, 'square', 0.09, null, i * 0.16)); },
     buy() { tone(988, 0.06, 'square', 0.07); tone(1319, 0.06, 'square', 0.07, null, 0.06); tone(1976, 0.14, 'square', 0.06, null, 0.12); },
+    laser() { if (ok('laser', 80)) { tone(1800, 0.3, 'sawtooth', 0.06, 300); noise(0.25, 0.1, 6000, 0, 'highpass'); } },
+    missile() { if (ok('missile', 90)) noise(0.25, 0.08, 800, 0, 'bandpass', 3000); },
+    pop() { if (ok('pop', 50)) { noise(0.18, 0.18, 2000, 0, 'lowpass', 120); tone(160, 0.12, 'sine', 0.15, 50); } },
+    announce(t) { const base = [523, 587, 659, 784][Math.min(3, t)]; [0, 4, 7, 12, 16].forEach((n, i) => tone(base * Math.pow(2, n / 12), 0.12, 'square', 0.08, null, i * 0.05)); },
+    freeze() { [2093, 1760, 1568, 1319, 1175].forEach((f, i) => tone(f, 0.25, 'triangle', 0.06, null, i * 0.04)); noise(0.5, 0.08, 8000, 0, 'highpass'); },
+    shield() { tone(400, 0.3, 'sine', 0.12, 1200); tone(600, 0.3, 'triangle', 0.06, 1800, 0.05); },
+    shieldBreak() { noise(0.3, 0.2, 5000, 0, 'highpass'); [1568, 1175, 784].forEach((f, i) => tone(f, 0.12, 'square', 0.06, null, i * 0.05)); },
+    evolve() { [262, 330, 392, 523, 659, 784, 1047, 1319, 1568].forEach((f, i) => tone(f, 0.18, 'square', 0.07, null, i * 0.06)); tone(65, 1, 'sawtooth', 0.15, 130); },
+    blast() { tone(200, 0.3, 'sine', 0.2, 800); noise(0.3, 0.1, 3000, 0, 'bandpass', 600); },
+    thief() { [1568, 1319, 1568, 1319, 1976].forEach((f, i) => tone(f, 0.08, 'square', 0.05, null, i * 0.07)); },
+    charge() { if (ok('charge', 150)) tone(150, 0.4, 'sawtooth', 0.06, 450); },
+    heartbeat() { tone(70, 0.12, 'sine', 0.35, 40); tone(65, 0.12, 'sine', 0.3, 40, 0.18); },
+    mission() { [659, 784, 988, 1319].forEach((f, i) => tone(f, 0.15, 'triangle', 0.09, null, i * 0.09)); },
     nope() { tone(180, 0.15, 'square', 0.07, 120); },
   };
 })();

@@ -223,6 +223,112 @@ const SPR_SRC = {
     'klk...',
     'kkk...',
   ],
+  chargerA: [
+    '..kkkkkkk....',
+    '.kBBBBBBBkk..',
+    'kBbbbbbbbbk..',
+    'kbbbbbbbbnbkk',
+    'kbbbbbbbbbbpk',
+    'kbbbbbbbbbwwk',
+    '.kbbkkkkbbkk.',
+    '.kkk....kkk..',
+  ],
+  chargerB: [
+    '..kkkkkkk....',
+    '.kBBBBBBBkk..',
+    'kBbbbbbbbbk..',
+    'kbbbbbbbbnbkk',
+    'kbbbbbbbbbbpk',
+    'kbbbbbbbbbwwk',
+    '.kbbk..kbbkk.',
+    '..kk....kk...',
+  ],
+  ghostA: [
+    '..kkkkk..',
+    '.kwwwwwk.',
+    'kwwwwwwwk',
+    'kwnwwwnwk',
+    'kwnwwwnwk',
+    'kwwwwwwwk',
+    'kwwwkwwwk',
+    'kwwwwwwwk',
+    'kwk.kwk.k',
+  ],
+  ghostB: [
+    '..kkkkk..',
+    '.kwwwwwk.',
+    'kwwwwwwwk',
+    'kwnwwwnwk',
+    'kwnwwwnwk',
+    'kwwwwwwwk',
+    'kwwwkwwwk',
+    'kwwwwwwwk',
+    '.kwk.kwk.',
+  ],
+  shroom: [
+    '..kkkkk..',
+    '.krrwrrk.',
+    'krwrrrwrk',
+    'krrrrrrrk',
+    'kkkkkkkkk',
+    '..kwwwk..',
+    '..knwnk..',
+    '..kwwwk..',
+    '..kkkkk..',
+  ],
+  thiefA: [
+    '..k...k..',
+    '.kyk.kyk.',
+    '.kyyyyyk.',
+    'kynyyynyk',
+    'kyyywyyyk',
+    '.kyyyyyk.',
+    '..kkkkk..',
+    '.kyk.kyk.',
+    '.kk...kk.',
+  ],
+  thiefB: [
+    '..k...k..',
+    '.kyk.kyk.',
+    '.kyyyyyk.',
+    'kynyyynyk',
+    'kyyywyyyk',
+    '.kyyyyyk.',
+    '..kkkkk..',
+    '..kykyk..',
+    '..kk.kk..',
+  ],
+  queenA: [
+    '......yyyy......',
+    'kk....kkkk....kk',
+    'kvk..kvvvvk..kvk',
+    'kvvkkvvvvvvkkvvk',
+    'kvvvvvrvvrvvvvvk',
+    'kvvvvvvvvvvvvvvk',
+    '.kvvvvwvvwvvvvk.',
+    '.kvvkvvvvvvkvvk.',
+    '..kk.kvvvvk.kk..',
+    '.....kvvvvk.....',
+    '......kkkk......',
+  ],
+  queenB: [
+    '......yyyy......',
+    '......kkkk......',
+    '.....kvvvvk.....',
+    '.kkkkvvvvvvkkkk.',
+    'kvvvvvrvvrvvvvvk',
+    'kvvvvvvvvvvvvvvk',
+    '.kvvvvwvvwvvvvk.',
+    'kvvvkvvvvvvkvvvk',
+    'kvk..kvvvvk..kvk',
+    'kk...kvvvvk...kk',
+    '......kkkk......',
+  ],
+  missile: [
+    '.kkkk..',
+    'kwwwwrk',
+    '.kkkk..',
+  ],
   bomb: [
     '....yo',
     '...k..',
@@ -256,6 +362,12 @@ const ICON_SRC = {
   coinA: ['.xxx.', 'xxwxx', 'xwxox', 'xxxox', '.ooo.'],
   coinB: ['.x.', 'xwx', 'xxx', 'xox', '.o.'],
   gem: ['.x.', 'xwx', 'xxx', '.x.'],
+  laser: ['xx.....', 'xwx....', '.xwx...', '..xwx..', '...xwx.', '....xwx', '.....xx'],
+  missile: ['....xx.', '...xwxx', '..xxxx.', '.xxxx..', 'oxxx...', 'ox.....', 'o......'],
+  freeze: ['x..x..x', '.x.x.x.', '..xwx..', 'xxwwwxx', '..xwx..', '.x.x.x.', 'x..x..x'],
+  shield: ['xxxxxxx', 'xwwxxxx', 'xwxxxxx', 'xxxxxxx', '.xxxxx.', '..xxx..', '...x...'],
+  evo: ['...x...', '..xwx..', 'xxxwxxx', '.xwwwx.', '..xxx..', '.xx.xx.', 'xx...xx'],
+  flag: ['xwww...', 'xwwwww.', 'xwwww..', 'xww....', 'x......', 'x......', 'x......'],
   reroll: ['.xxxx..', 'x....x.', 'x...xxx', 'x....x.', 'x......', '.x...x.', '..xxx..'],
 };
 
@@ -282,11 +394,13 @@ function makeSprite(rows, over = {}, outline = null) {
       g.fillRect(x + pad, y + pad, 1, 1);
     }
   };
+  const px = [];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (rows[y][x] !== '.') px.push([x + pad, y + pad, col(rows[y][x])]);
   const c = mk(g => paint(g, 'n'));
   const f = mk(g => paint(g, 'flash'));
   const sil = mk(g => paint(g, 'sil'));
   const flip = src => mk(g => { g.translate(W, 0); g.scale(-1, 1); g.drawImage(src, 0, 0); });
-  return { w: W, h: H, c, f, sil, cf: flip(c), ff: flip(f) };
+  return { w: W, h: H, c, f, sil, px, cf: flip(c), ff: flip(f) };
 }
 
 const SPR = (() => {
@@ -311,6 +425,14 @@ const SPR = (() => {
     bone: [makeSprite(S.bone)],
     boomer: [makeSprite(S.boomer)],
     bomb: [makeSprite(S.bomb)],
+    charger: [makeSprite(S.chargerA, { b: '#9a6440', B: '#5e3b28' }), makeSprite(S.chargerB, { b: '#9a6440', B: '#5e3b28' })],
+    ghost: [makeSprite(S.ghostA, { w: '#e8f0ff', n: '#3b3a52' }), makeSprite(S.ghostB, { w: '#e8f0ff', n: '#3b3a52' })],
+    shroom: [makeSprite(S.shroom)],
+    thief: [makeSprite(S.thiefA), makeSprite(S.thiefB)],
+    queen: [makeSprite(S.queenA), makeSprite(S.queenB)],
+    missile: [makeSprite(S.missile)],
+    boneG: [makeSprite(S.bone, { w: '#ffd23f' })],
+    boomerG: [makeSprite(S.boomer, { l: '#ff4cd2' })],
   };
 })();
 
@@ -337,3 +459,28 @@ function shade(hex, f) {
   r = Math.round((t - r) * p + r); g = Math.round((t - g) * p + g); b = Math.round((t - b) * p + b);
   return '#' + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
 }
+
+/* Stepped radial sprites used by the lighting system (crisp pixel bands). */
+function bandedDisc(size, steps, colorFn) {
+  const c = document.createElement('canvas'); c.width = c.height = size;
+  const g = c.getContext('2d'), R = size / 2;
+  for (let i = 0; i < steps; i++) {
+    const r = Math.round(R * (1 - i / steps));
+    g.fillStyle = colorFn(i);
+    for (let dy = -r; dy < r; dy++) { const dx = Math.round(Math.sqrt(r * r - (dy + 0.5) * (dy + 0.5))); g.fillRect(R - dx, R + dy, dx * 2, 1); }
+  }
+  return c;
+}
+const LIGHT_SPR = bandedDisc(48, 6, i => `rgba(0,0,0,${0.22 + i * 0.12})`);
+const Glow = (() => {
+  const cache = new Map();
+  return function glow(col) {
+    let c = cache.get(col);
+    if (!c) {
+      const n = parseInt(col.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+      c = bandedDisc(24, 4, i => `rgba(${r},${g},${b},${0.08 + i * 0.07})`);
+      cache.set(col, c);
+    }
+    return c;
+  };
+})();

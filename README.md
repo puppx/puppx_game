@@ -12,6 +12,11 @@ A tiny pixel-art arena survival game. Made for phones first, built with plain HT
 - **Waves:** each wave lasts 25 seconds and can bring a random twist (Bat Swarm, Gold Rush, Bomb Party, Giants...).
 - **Bosses** arrive every 5 waves. Beat one to unlock a new zone: Meadow → Dungeon → Lava Lands → Ice Caves → The Void.
 - **Chests** show up around the map (follow the arrow at the edge of the screen). Each one gives a free upgrade.
+- **Evolutions:** max out a weapon (level 5) and an **EVOLVE!** card can appear. It turns the weapon into something much stronger: Bone Storm, Storm God, Inferno, Blade Cyclone, Supernova, Giga Beam, Nuke Swarm.
+- **Multi-kills:** kill 6+ enemies at once for MULTI / MEGA / ULTRA KILL and **RAMPAGE!!!** bonus coins.
+- **Gold Thief:** sometimes a golden gremlin shows up and runs away. Catch it before it escapes for a pile of coins and a chest.
+- **Power-ups:** hearts, magnets, screen-clearing bombs, **Freeze** (stops everything for 4 seconds) and **Shield** (blocks one hit).
+- **Goals:** 3 missions at a time (e.g. *Swat 100 bats*, *Reach wave 10*). Finish them for bonus coins; new ones replace them.
 - **Coins** carry over between runs. Spend them in the **Shop** on permanent upgrades, or unlock the Cat, Frog and Bun.
 
 ## Play offline / install like an app
@@ -46,8 +51,8 @@ python3 -m http.server 8000
 | `js/font.js` | Built-in 5px bitmap font |
 | `js/art.js` | All pixel-art sprites and icons, drawn from text grids |
 | `js/sfx.js` | Synthesised chiptune sound effects and music (Web Audio) |
-| `js/game.js` | Game loop, enemies, weapons, upgrades, menus, shop, saving |
+| `js/game.js` | Game loop, enemies, weapons, evolutions, lighting, missions, menus, shop, saving |
 | `sw.js` | Offline cache |
 | `manifest.webmanifest` | Install-as-app metadata |
 
-When you change game files, bump `CACHE` in `sw.js` (e.g. `puppx-rampage-v2`) so installed copies pick up the update.
+When you change game files, bump `CACHE` in `sw.js` (e.g. `puppx-rampage-v3`) so installed copies pick up the update.
