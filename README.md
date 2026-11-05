@@ -17,6 +17,13 @@ A tiny pixel-art arena survival game. Made for phones first, built with plain HT
 - **Gold Thief:** sometimes a golden gremlin shows up and runs away. Catch it before it escapes for a pile of coins and a chest.
 - **Power-ups:** hearts, magnets, screen-clearing bombs, **Freeze** (stops everything for 4 seconds) and **Shield** (blocks one hit).
 - **Goals:** 3 missions at a time (e.g. *Swat 100 bats*, *Reach wave 10*). Finish them for bonus coins; new ones replace them.
+- **Ultimate:** a gauge fills as you fight. Tap **ULT** (or press Q) for a hero move: Pup's Mega Bark, Cat's Time Slash, Frog's Gulp, Bun's Bunny Squad.
+- **Map objects:** shoot red barrels to blow up crowds, smash crates for loot, avoid spike traps (they flash red before popping up) and lava pools.
+- **Shrines:** a slot machine (spend coins, hit the jackpot), a curse shrine (tougher foes, double XP and gold) and a power shrine (stand in it for 5 seconds for a big buff).
+- **Modes:** Normal, **Daily Challenge** (two new rules every day), **Boss Rush**, and **Nightmare** (unlocks at wave 15).
+- **Style:** buy hats and pets with coins. Pets follow you and fight.
+- **Records:** stats, 25 badges that pay coins, and a bestiary of every foe you've met.
+- **Settings:** sound, music, screen shake, vibration, effects quality (LOW helps older phones), button size and damage numbers.
 - **Coins** carry over between runs. Spend them in the **Shop** on permanent upgrades, or unlock the Cat, Frog and Bun.
 
 ## Play offline / install like an app
@@ -52,7 +59,9 @@ python3 -m http.server 8000
 | `js/art.js` | All pixel-art sprites and icons, drawn from text grids |
 | `js/sfx.js` | Synthesised chiptune sound effects and music (Web Audio) |
 | `js/game.js` | Game loop, enemies, weapons, evolutions, lighting, missions, menus, shop, saving |
+| `js/content.js` | Ultimates, map objects, shrines, pets, hats, modes, daily rules, badges, bestiary |
+| `js/screens.js` | Mode select, settings, records and style screens; starts the game |
 | `sw.js` | Offline cache |
 | `manifest.webmanifest` | Install-as-app metadata |
 
-When you change game files, bump `CACHE` in `sw.js` (e.g. `puppx-rampage-v3`) so installed copies pick up the update.
+When you change game files, bump `CACHE` in `sw.js` (e.g. `puppx-rampage-v5`) so installed copies pick up the update.

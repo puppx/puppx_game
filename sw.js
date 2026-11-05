@@ -1,5 +1,5 @@
 /* Offline support: cache everything on install, serve from cache, refresh in the background. */
-const CACHE = 'puppx-rampage-v3';
+const CACHE = 'puppx-rampage-v4';
 const ASSETS = [
   './',
   'index.html',
@@ -9,6 +9,8 @@ const ASSETS = [
   'js/art.js',
   'js/sfx.js',
   'js/game.js',
+  'js/content.js',
+  'js/screens.js',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/icon-maskable-512.png',

@@ -158,6 +158,14 @@ const Sfx = (() => {
     charge() { if (ok('charge', 150)) tone(150, 0.4, 'sawtooth', 0.06, 450); },
     heartbeat() { tone(70, 0.12, 'sine', 0.35, 40); tone(65, 0.12, 'sine', 0.3, 40, 0.18); },
     mission() { [659, 784, 988, 1319].forEach((f, i) => tone(f, 0.15, 'triangle', 0.09, null, i * 0.09)); },
+    ult() { [262, 392, 523, 784, 1047].forEach((f, i) => tone(f, 0.2, 'sawtooth', 0.07, null, i * 0.04)); noise(0.6, 0.25, 2000, 0, 'lowpass', 100); tone(55, 0.8, 'square', 0.12, 110); },
+    ready() { [784, 1047, 1319].forEach((f, i) => tone(f, 0.12, 'triangle', 0.09, null, i * 0.07)); },
+    slash() { if (ok('slash', 40)) { noise(0.12, 0.2, 6000, 0, 'highpass'); tone(1400, 0.08, 'sawtooth', 0.05, 400); } },
+    gulp() { tone(300, 0.25, 'sine', 0.3, 60); tone(90, 0.3, 'square', 0.12, 45, 0.1); },
+    crate() { if (ok('crate', 60)) { noise(0.15, 0.2, 900, 0, 'lowpass', 200); tone(180, 0.08, 'square', 0.08, 90); } },
+    curse() { [220, 207, 196, 185].forEach((f, i) => tone(f, 0.35, 'sawtooth', 0.08, null, i * 0.12)); noise(0.8, 0.12, 400, 0, 'lowpass', 80); },
+    jackpot() { [523, 659, 784, 1047, 784, 1047, 1319, 1568].forEach((f, i) => tone(f, 0.1, 'square', 0.08, null, i * 0.06)); },
+    tick() { if (ok('tick', 50)) tone(1800, 0.02, 'square', 0.03); },
     nope() { tone(180, 0.15, 'square', 0.07, 120); },
   };
 })();
