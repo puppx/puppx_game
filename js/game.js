@@ -29,6 +29,9 @@ resize();
 
 /* ---------- Helpers ---------- */
 const TAU = Math.PI * 2;
+/* Fixed rainbow palette: cycling through a few exact colours keeps every colour cache small. */
+const RAINBOW = ['#ff4d6d', '#ff8c2e', '#ffd23f', '#5ed15a', '#5ef0ff', '#4aa3ff', '#9b5de5', '#ff4cd2'];
+function rainbow(t, off = 0) { return RAINBOW[((Math.floor(t + off) % 8) + 8) % 8]; }
 const rnd = (a = 1, b) => (b === undefined ? Math.random() * a : a + Math.random() * (b - a));
 const rint = (a, b) => Math.floor(rnd(a, b + 1));
 const pick = a => a[Math.floor(Math.random() * a.length)];
@@ -840,6 +843,7 @@ function updateGame(rdt) {
   spawnTick(dt);
   G.chestT -= dt;
   if (G.chestT <= 0) { G.chestT = rnd(32, 46); const p = spawnPos(-10); G.pickups.push({ kind: 'chest', x: p.x, y: p.y, vx: 0, vy: 0, t: 0, big: false, life: 999 }); }
+  G.saveT = (G.saveT || 0) + rdt; if (G.saveT > 20) { G.saveT = 0; persist(); }
   if (G.comboT > 0) { G.comboT -= dt; if (G.comboT <= 0) { G.combo = 0; G.feverNext = 30; } }
   if (G.fever > 0) G.fever -= dt;
   if (G.freeze > 0) G.freeze -= dt;
@@ -900,7 +904,7 @@ function updatePlayer(dt) {
     P.regenT += dt;
     if (P.regenT >= st.regen) { P.regenT = 0; if (P.hp < st.maxHp) { P.hp++; floater(P.x, P.y - 12, '+1 HP', '#5ed15a'); } }
   }
-  if (G.fever > 0 && Math.random() < 0.5) G.parts.push({ x: P.x + rnd(-3, 3), y: P.y + 5, vx: 0, vy: -10, t: 0.4, col: `hsl(${(G.t * 400) % 360},100%,65%)`, sz: 1 });
+  if (G.fever > 0 && Math.random() < 0.5) G.parts.push({ x: P.x + rnd(-3, 3), y: P.y + 5, vx: 0, vy: -10, t: 0.4, col: rainbow(G.t * 7), sz: 1 });
 }
 
 function updateEnemies(dt) {
@@ -1049,7 +1053,7 @@ function fireBullet(a, fev, i) {
   G.bullets.push({
     x: P.x + Math.cos(a) * 5, y: P.y + Math.sin(a) * 5 - 1, vx: Math.cos(a) * st.bspeed, vy: Math.sin(a) * st.bspeed,
     r: 2 * st.size, dmg, crit, pierce: st.pierce, life: 0.85, hits: [],
-    col: fev ? `hsl(${(G.t * 500 + i * 50) % 360},100%,65%)` : crit ? '#ffd23f' : st.bullet,
+    col: fev ? rainbow(G.t * 9, i) : crit ? '#ffd23f' : st.bullet,
   });
 }
 function updateWeapons(dt) {
@@ -1333,6 +1337,7 @@ function updateFx(dt) {
     } else { p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 0.92; p.vy *= 0.92; }
   }
   G.parts = G.parts.filter(p => p.t > 0);
+  if (G.parts.length > 700) G.parts.splice(0, G.parts.length - 700);
   for (const a of G.arcs) a.t -= dt;
   G.arcs = G.arcs.filter(a => a.t > 0);
   if (G.letterbox > 0) G.letterbox -= dt;
@@ -1717,7 +1722,7 @@ function drawHUD() {
   if (G.combo >= 5) {
     const y = Math.round(GH * 0.3);
     const pulse = G.comboT > 2.2 ? 1 : 0;
-    const col = G.fever > 0 ? `hsl(${(T * 400) % 360},100%,65%)` : G.combo >= 20 ? '#ff8c2e' : '#fff';
+    const col = G.fever > 0 ? rainbow(T * 8) : G.combo >= 20 ? '#ff8c2e' : '#fff';
     Font.outline(ctx, G.combo + 'X', L + 1, y - pulse, col, '#1b1428', 2);
     Font.outline(ctx, 'COMBO', L + 1, y + 12, '#c0c8ff');
     const bw = 30;
@@ -1800,7 +1805,7 @@ function drawScreenFx() {
     ctx.globalAlpha = 1;
   }
   if (G.fever > 0) {
-    const col = `hsl(${(T * 300) % 360},100%,60%)`;
+    const col = rainbow(T * 6);
     ctx.globalAlpha = 0.6; rect(0, 0, GW, 2, col); rect(0, GH - 2, GW, 2, col); rect(0, 0, 2, GH, col); rect(GW - 2, 0, 2, GH, col); ctx.globalAlpha = 1;
   }
   const low = P.hp === 1 && G.dying <= 0 ? 0.18 + Math.sin(T * 6) * 0.1 : 0;
@@ -1956,7 +1961,7 @@ function drawLevelUp(dt) {
   const top = SAFE.t + 6;
   const bounce = Math.max(0, 1 - G.lvT * 4) * 8;
   const tY = land ? top + 2 : Math.max(top + 4, GH * 0.12);
-  Font.outline(ctx, 'LEVEL UP!', GW / 2, tY - bounce, `hsl(${(T * 200) % 360},100%,70%)`, '#1b1428', 3, 'center');
+  Font.outline(ctx, 'LEVEL UP!', GW / 2, tY - bounce, rainbow(T * 4), '#1b1428', 3, 'center');
   Font.outline(ctx, G.pendingLv > 1 ? 'PICK ONE  (' + G.pendingLv + ' TO GO)' : 'PICK ONE', GW / 2, tY + 19, '#c0c8ff', '#1b1428', 1, 'center');
   const ch = G.choices || [];
   const ready = G.lvT > 0.4;
@@ -2076,6 +2081,14 @@ function drawGameOver(dt) {
 /* ---------- Main loop ---------- */
 let lastT = performance.now();
 function frame(now) {
+  requestAnimationFrame(frame);
+  try { step(now); } catch (err) {
+    console.error(err);
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    try { ctx.setTransform(1, 0, 0, 1, 0, 0); } catch (_) { }
+  }
+}
+function step(now) {
   const rdt = Math.min(0.05, Math.max(0, (now - lastT) / 1000));
   lastT = now; T += rdt;
   UI.list = [];
@@ -2092,7 +2105,6 @@ function frame(now) {
     else if (scene === 'levelup') drawLevelUp(rdt);
     else if (scene === 'over') drawGameOver(rdt);
   }
-  requestAnimationFrame(frame);
 }
 initMenuBg();
 Sfx.song('menu');

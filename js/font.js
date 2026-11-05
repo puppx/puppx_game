@@ -64,6 +64,7 @@ const Font = (() => {
     const key = ch + color;
     let g = cache.get(key);
     if (g) return g;
+    if (cache.size > 600) cache.clear();
     const r = rows(ch);
     const w = r[0].length;
     const c = document.createElement('canvas');

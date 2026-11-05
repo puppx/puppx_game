@@ -442,6 +442,7 @@ const Icons = (() => {
     const key = name + color + oc;
     let s = cache.get(key);
     if (!s) {
+      if (cache.size > 200) cache.clear();
       const o = color === '#fff' ? {} : { x: color };
       if (name === 'coinA' || name === 'coinB') { o.x = '#ffd23f'; o.o = '#e08a1e'; }
       s = makeSprite(ICON_SRC[name], o, oc);
@@ -477,6 +478,7 @@ const Glow = (() => {
   return function glow(col) {
     let c = cache.get(col);
     if (!c) {
+      if (cache.size > 100) cache.clear();
       const n = parseInt(col.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
       c = bandedDisc(24, 4, i => `rgba(${r},${g},${b},${0.08 + i * 0.07})`);
       cache.set(col, c);
